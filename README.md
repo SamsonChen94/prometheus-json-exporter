@@ -1,7 +1,5 @@
 json_exporter
 ========================
-[![CircleCI](https://circleci.com/gh/prometheus-community/json_exporter.svg?style=svg)](https://circleci.com/gh/prometheus-community/json_exporter)
-
 A [prometheus](https://prometheus.io/) exporter which scrapes remote JSON by JSONPath.
 
 # Build
@@ -36,20 +34,24 @@ $ cat example/data.json
 }
 
 $ cat example/config.yml
-- name: example_global_value
-  path: $.counter
-  labels:
-    environment: beta # static label
+headers:
+  - Accept: application/json
 
-- name: example_value
-  type: object
-  path: $.values[*]?(@.state == "ACTIVE")
-  labels:
-    environment: beta # static label
-    id: $.id          # dynamic label
-  values:
-    active: 1      # static value
-    count: $.count # dynamic value
+metrics:
+  - name: example_global_value
+    path: $.counter
+    labels:
+      environment: beta # static label
+
+  - name: example_value
+    type: object
+    path: $.values[*]?(@.state == "ACTIVE")
+    labels:
+      environment: beta # static label
+      id: $.id          # dynamic label
+    values:
+      active: 1      # static value
+      count: $.count # dynamic value
 
 $ python -m SimpleHTTPServer 8000 &
 Serving HTTP on 0.0.0.0 port 8000 ...
@@ -72,12 +74,14 @@ example_value_count{environment="beta",id="id-C"} 3
 
 ```console
 docker run \
-  -v config.yml:/config.yml
-  json_exporter \
-    http://example.com/target.json \
-    /config.yml
+    -v example/config.yml:/config.yml \
+    -p 9145:9145 \
+    samsonchen/prometheus-json-exporter \
+    http://localhost:8000/example/data.json /config.yml
 ```
 
 # See Also
+- [prometheus-comunity/json_exporter](https://github.com/prometheus-community/json_exporter)
+- [header modification](https://github.com/prometheus-community/json_exporter/pull/30)
 - [kawamuray/jsonpath](https://github.com/kawamuray/jsonpath#path-syntax) : For syntax reference of JSONPath.
   Originally forked from nicksardo/jsonpath(now is https://github.com/NodePrime/jsonpath).
