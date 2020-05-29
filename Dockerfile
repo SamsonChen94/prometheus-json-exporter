@@ -1,12 +1,11 @@
-ARG ARCH="amd64"
-ARG OS="linux"
-FROM quay.io/prometheus/busybox-${OS}-${ARCH}:glibc
-LABEL maintainer="The Prometheus Authors <prometheus-developers@googlegroups.com>"
+FROM golang:1.14 as builder
+WORKDIR /
+ADD . .
+RUN make build
 
-ARG ARCH="amd64"
-ARG OS="linux"
-COPY .build/${OS}-${ARCH}/json_exporter /bin/json_exporter
+FROM alpine:3.11
+RUN apk --no-cache add ca-certificates
+WORKDIR /app
+COPY --from=builder /json_exporter /bin/json_exporter
 
-EXPOSE      7979
-USER        nobody
-ENTRYPOINT  [ "/bin/bind_exporter" ]
+CMD "/bin/json_exporter"
