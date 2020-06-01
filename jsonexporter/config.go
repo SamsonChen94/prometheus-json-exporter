@@ -35,7 +35,7 @@ type Header map[string]string
 // Config contains metrics and headers defining
 // a configuration
 type Config struct {
-	Headers []Header         
+	Headers []Header
 	Metrics []Metric
 }
 
