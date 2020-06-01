@@ -232,7 +232,7 @@ func (obsc *ObjectScraper) Scrape(data []byte, reg *harness.MetricRegistry) erro
 			}
 
 			fqn := harness.MakeMetricName(obsc.Name, name)
-			log.Debugf("metric updated;name:<%s>,labels:<%s>,value:<%.2f>", fqn, labels, metricValue)
+			log.Infof("metric updated;name:<%s>,labels:<%s>,value:<%.2f>", fqn, labels, metricValue)
 			reg.Get(fqn).(*prometheus.GaugeVec).With(labels).Set(metricValue)
 		}
 	})
